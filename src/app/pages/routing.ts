@@ -1,10 +1,15 @@
 import { Routes } from '@angular/router';
 
 const Routing: Routes = [
+  // {
+  //   path: 'dashboard',
+  //   loadChildren: () =>
+  //     import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+  // },
   {
     path: 'dashboard',
     loadChildren: () =>
-      import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
+      import('./knowledge/knowledge.module').then((m) => m.KnowledgeModule),
   },
   {
     path: 'builder',

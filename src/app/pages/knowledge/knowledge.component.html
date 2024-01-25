@@ -1,0 +1,72 @@
+<div class="card card-custom">
+  <!-- begin::Header -->
+  <div class="card-header card-header-stretch overflow-auto">
+    <ul
+      class="nav nav-stretch nav-line-tabs fw-bold border-transparent flex-nowrap"
+      role="tablist"
+    >
+      <li class="nav-item">
+        <a
+          class="nav-link cursor-pointer tab-menu"
+          [ngClass]="{ active: activeTab === 'Videos' }"
+          (click)="setActiveTab('Videos')"
+          role="tab"
+        >
+          Videos
+        </a>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link cursor-pointer tab-menu"
+          [ngClass]="{ active: activeTab === 'Documents' }"
+          (click)="setActiveTab('Documents')"
+          role="tab"
+        >
+          Documents
+        </a>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link cursor-pointer tab-menu"
+          [ngClass]="{ active: activeTab === 'Quizzes' }"
+          (click)="setActiveTab('Quizzes')"
+          role="tab"
+        >
+          Quizzes
+        </a>
+      </li>
+    </ul>
+  </div>
+  <!-- end::Header -->
+  <!-- begin::Form -->
+  <form class="form" novalidate #form="ngForm" (ngSubmit)="submitPreview()">
+    <!-- begin::Body -->
+    <div class="card-body">
+      <div class="tab-content pt-3">
+        <!-- begin::Sidebar -->
+        <div class="tab-pane" [ngClass]="{ active: activeTab === 'Videos' }">
+          <app-knowledge-videos></app-knowledge-videos>
+        </div>
+        <!-- end::Sidebar -->
+
+        <!-- begin::Header -->
+        <div class="tab-pane" [ngClass]="{ active: activeTab === 'Documents' }">
+          <app-knowledge-documents></app-knowledge-documents>
+        </div>
+        <!-- end::Header -->
+
+        <!-- begin::Toolbar -->
+        <div class="tab-pane" [ngClass]="{ active: activeTab === 'Quizzes' }">
+          <app-knowledge-quizzes></app-knowledge-quizzes>
+        </div>
+        <!-- end::Toolbar -->
+      </div>
+    </div>
+    <!-- end::Body -->
+
+    <!-- begin::Footer -->
+
+    <!-- end::Footer -->
+  </form>
+  <!-- end::Form -->
+</div>
