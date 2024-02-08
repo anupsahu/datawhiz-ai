@@ -1,11 +1,12 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subscription, from } from 'rxjs';
 import { map, catchError, switchMap, finalize } from 'rxjs/operators';
 import { UserModel } from '../models/user.model';
 import { AuthModel } from '../models/auth.model';
 import { AuthHTTPService } from './auth-http';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 export type UserType = UserModel | undefined;
 
@@ -31,9 +32,14 @@ export class AuthService implements OnDestroy {
     this.currentUserSubject.next(user);
   }
 
+  get isAuthenticated(): boolean {
+    return this.afAuth.currentUser !== null;
+  }
+
   constructor(
     private authHttpService: AuthHTTPService,
-    private router: Router
+    private router: Router,
+    private afAuth: AngularFireAuth
   ) {
     this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     this.currentUserSubject = new BehaviorSubject<UserType>(undefined);
@@ -46,14 +52,21 @@ export class AuthService implements OnDestroy {
   // public methods
   login(email: string, password: string): Observable<UserType> {
     this.isLoadingSubject.next(true);
-    return this.authHttpService.login(email, password).pipe(
-      map((auth: AuthModel) => {
-        const result = this.setAuthFromLocalStorage(auth);
-        return result;
+    return from(this.afAuth.signInWithEmailAndPassword(email, password)).pipe(
+      map((user) => {
+        console.log(user);
+        const user1 = new UserModel();
+        const auth = new AuthModel();
+        auth.authToken = user?.user?.refreshToken;
+        auth.refreshToken = user?.user?.refreshToken;
+        this.setAuthFromLocalStorage(auth);
+        user1.setUser(user);
+        this.currentUserValue = user1;
+        return user1;
       }),
-      switchMap(() => this.getUserByToken()),
-      catchError((err) => {
-        console.error('err', err);
+      catchError((error) => {
+        // An error occurred
+        console.error('err', error);
         return of(undefined);
       }),
       finalize(() => this.isLoadingSubject.next(false))
@@ -61,10 +74,18 @@ export class AuthService implements OnDestroy {
   }
 
   logout() {
-    localStorage.removeItem(this.authLocalStorageToken);
-    this.router.navigate(['/auth/login'], {
-      queryParams: {},
-    });
+    this.afAuth
+      .signOut()
+      .then(() => {
+        localStorage.removeItem(this.authLocalStorageToken);
+        this.router.navigate(['/auth/login'], {
+          queryParams: {},
+        });
+      })
+      .catch((error) => {
+        // An error occurred
+        console.log(error);
+      });
   }
 
   getUserByToken(): Observable<UserType> {

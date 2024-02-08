@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { LayoutService } from '../../_metronic/layout';
+import { LayoutService, PageInfoService } from '../../_metronic/layout';
 
 type Tabs = 'Videos' | 'Documents' | 'Quizzes';
 
@@ -14,7 +14,7 @@ export class KnowledgeComponent implements OnInit {
   @ViewChild('form', { static: true }) form: NgForm;
   configLoading: boolean = false;
   resetLoading: boolean = false;
-  constructor(private layout: LayoutService) {}
+  constructor(private layout: LayoutService, private page: PageInfoService) {}
 
   ngOnInit(): void {
     this.model = this.layout.getLayoutConfig(
